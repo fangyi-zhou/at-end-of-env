@@ -16,3 +16,9 @@ declaring the `theorem` environment with `\newtheorem`.
 - amsthm (for the QED stack)
 - letltxmacro (for saving existing macros)
 
+
+## Maintainer
+Fangyi Zhou <me+ctan@fangyi.io>
+
+## Licence
+The Unlicense
