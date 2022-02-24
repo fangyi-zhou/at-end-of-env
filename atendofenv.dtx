@@ -27,7 +27,7 @@
 
 % \iffalse
 %<package>\NeedsTeXFormat{LaTeX2e}
-%<package>\ProvidesPackage{atendofenv}[2022/02/23 v0.1 Initial Version]
+%<package>\ProvidesPackage{atendofenv}[2022/02/24 v0.2 Prevent an infinite loop]
 %<package>\RequirePackage{amsthm}
 %<package>\RequirePackage{letltxmacro}
 %<*driver>
@@ -39,6 +39,7 @@
 \usepackage[a4paper, margin=3cm]{geometry}
 \usepackage{indentfirst}
 \usepackage[hidelinks]{hyperref}
+\usepackage{amssymb}
 \usepackage{atendofenv}
 \EnableCrossrefs
 \CodelineIndex
@@ -111,6 +112,16 @@
 %   This is a long theorem that will be very long, and it will be helpful if I
 %   can add a symbol at the end of it to mark its end.
 % \end{theorem}
+% You can also change the symbol later.
+% \AtEndOfEnv{theorem}{$\lrcorner$}
+% \begin{verbatim}
+% \AtEndOfEnv{theorem}{$\lrcorner$}
+% \end{verbatim}
+% Now theorems look like this:
+% \begin{theorem}
+%   This is a long theorem that will be very long, and it will be helpful if I
+%   can add a symbol at the end of it to mark its end.
+% \end{theorem}
 % \noindent
 % \textbf{Q:} \emph{But, couldn't I change tweak the style of theorems when defining them?}
 %
@@ -123,16 +134,24 @@
 \newcommand{\AtEndOfEnv}[2]{
 %    \end{macrocode}
 % We first check whether the environment is defined. If so, save the original
-% macros; otherwise report an error.
+% macros (if not saved already); otherwise report an error.
+% \changes{0.2}{2022/02/24}{Fix an infinite loop when trying to change the
+% symbol for the same environment twice.}
 %    \begin{macrocode}
   \ifcsname #1\endcsname
+    \ifcsname aeoe@old#1\endcsname\relax
+    \else
     \expandafter\LetLtxMacro\csname aeoe@old#1\expandafter\endcsname\csname #1\endcsname
+    \fi
   \else
     \PackageError{atendofenv}{Environment #1 undefined}{Check the environment
     name passed to AtEndOfEnv}
   \fi
   \ifcsname end#1\endcsname
+    \ifcsname aeoe@oldend#1\endcsname\relax
+    \else
     \expandafter\LetLtxMacro\csname aeoe@oldend#1\expandafter\endcsname\csname end#1\endcsname
+    \fi
   \else
     \PackageError{atendofenv}{Environment #1 undefined}{Check the environment
     name passed to AtEndOfEnv}
